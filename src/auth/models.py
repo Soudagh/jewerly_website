@@ -3,7 +3,7 @@ from sqlalchemy import Table, String, Integer, Column, Text, DateTime, Boolean, 
 from sqlalchemy.types import ARRAY
 from datetime import datetime
 
-from database import Base
+from src.database import Base
 
 metadata = MetaData()
 
@@ -39,6 +39,7 @@ user = Table(
     Column("is_verified", Boolean, default=False, nullable=False),
 )
 
+print(metadata)
 # class User(Base):
 #     __tablename__ = 'user'
 #
@@ -55,7 +56,7 @@ user = Table(
 #     is_superuser = Column(Boolean, default=False, nullable=False)
 #     is_verified = Column(Boolean, default=False, nullable=False)
 
-
+#
 class User_auth(SQLAlchemyBaseUserTable[int], Base):
     id = Column(Integer, primary_key=True)
 

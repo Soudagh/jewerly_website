@@ -1,7 +1,9 @@
 from fastapi import FastAPI, Depends
 
-from auth.base_config import fastapi_users, auth_backend
-from auth.schemas import UserRead, UserCreate
+from src.auth.base_config import fastapi_users, auth_backend
+from src.auth.schemas import UserRead, UserCreate
+
+from src.orders.router import router as router_order
 
 
 app = FastAPI(
@@ -20,7 +22,11 @@ app.include_router(
     tags=["Auth"],
 )
 
+
+app.include_router(router_order)
+
 current_user = fastapi_users.current_user()
+
 
 
 # @app.get("/protected-route")
