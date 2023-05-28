@@ -1,38 +1,37 @@
-from sqlalchemy import String, Integer, Column, Text, DateTime, create_engine, ForeignKey, Boolean, JSON
+from sqlalchemy import String, Integer, Column, Text, DateTime, create_engine, ForeignKey, Boolean, JSON, MetaData
 from sqlalchemy.types import ARRAY
 from datetime import datetime
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 from config import DB_USER, DB_NAME, DB_PORT, DB_HOST, DB_PASS
-
-engine = create_engine(f'postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
-Base = declarative_base()
+from database import Base
 
 
-class Role(Base):
-    __tablename__ = 'roles'
-
-    id = Column(Integer, primary_key=True)
-    role_name = Column(Text, nullable=False)
-    role_permissions = Column(JSON)
-
-
-class User(Base):
-    __tablename__ = 'user'
-
-    id = Column(Integer, primary_key=True)
-    role_id = Column(Integer, ForeignKey('roles.id'))
-    hashed_password = Column(String(length=1024), nullable=False)
-    email = Column(String(length=1024), unique=True, index=True, nullable=False)
-    user_name = Column(Text, nullable=False)
-    user_surname = Column(Text, nullable=False)
-    favorite = Column(ARRAY(Integer), nullable=True)
-    registration_date = Column(DateTime, default=datetime.utcnow())
-
-    is_active = Column(Boolean, default=True, nullable=False)
-    is_superuser = Column(Boolean, default=False, nullable=False)
-    is_verified = Column(Boolean, default=False, nullable=False)
-
+metadata = MetaData()
+# class Role(Base):
+#     __tablename__ = 'roles'
+#
+#     id = Column(Integer, primary_key=True)
+#     role_name = Column(Text, nullable=False)
+#     role_permissions = Column(JSON)
+#
+#
+# class User(Base):
+#     __tablename__ = 'user'
+#
+#     id = Column(Integer, primary_key=True)
+#     role_id = Column(Integer, ForeignKey('roles.id'))
+#     hashed_password = Column(String(length=1024), nullable=False)
+#     email = Column(String(length=1024), unique=True, index=True, nullable=False)
+#     user_name = Column(Text, nullable=False)
+#     user_surname = Column(Text, nullable=False)
+#     favorite = Column(ARRAY(Integer), nullable=True)
+#     registration_date = Column(DateTime, default=datetime.utcnow())
+#
+#     is_active = Column(Boolean, default=True, nullable=False)
+#     is_superuser = Column(Boolean, default=False, nullable=False)
+#     is_verified = Column(Boolean, default=False, nullable=False)
+#
 
 class Brand(Base):
     __tablename__ = 'brands'
@@ -118,6 +117,6 @@ class Order(Base):
     order_date = Column(DateTime, default=datetime.utcnow())
 
 
-Base.metadata.create_all(engine)
-
-Session = sessionmaker(bind=engine)
+# Base.metadata.create_all(engine)
+#
+# Session = sessionmaker(bind=engine)
