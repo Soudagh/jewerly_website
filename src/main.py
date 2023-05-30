@@ -1,10 +1,9 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 
 from src.auth.base_config import fastapi_users, auth_backend
 from src.auth.schemas import UserRead, UserCreate
-
+from src.details.router import router as router_detail
 from src.orders.router import router as router_order
-
 
 app = FastAPI(
     title="Jewerly App App"
@@ -25,6 +24,7 @@ app.include_router(
 
 app.include_router(router_order)
 
+app.include_router(router_detail)
 current_user = fastapi_users.current_user()
 
 

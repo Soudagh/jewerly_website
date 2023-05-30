@@ -10,7 +10,6 @@ class Brand(BaseModel):
 
 
 class BrandCreate(BaseModel):
-    id: int
     brand_name: str
 
 
@@ -23,7 +22,6 @@ class Category(BaseModel):
 
 
 class CategoryCreate(BaseModel):
-    id: int
     category_name: str
 
 
@@ -36,7 +34,6 @@ class Style(BaseModel):
 
 
 class StyleCreate(BaseModel):
-    id: int
     style_name: str
 
 
@@ -49,7 +46,6 @@ class Color(BaseModel):
 
 
 class ColorCreate(BaseModel):
-    id: int
     color_name: str
 
 
@@ -62,7 +58,6 @@ class Material(BaseModel):
 
 
 class MaterialCreate(BaseModel):
-    id: int
     material_name: str
 
 
@@ -75,7 +70,6 @@ class Stone(BaseModel):
 
 
 class StoneCreate(BaseModel):
-    id: int
     stone_name: str
 
 
@@ -88,7 +82,6 @@ class Cutting(BaseModel):
 
 
 class CuttingCreate(BaseModel):
-    id: int
     cutting_name: str
 
 
@@ -101,5 +94,4 @@ class Weaving(BaseModel):
 
 
 class WeavingCreate(BaseModel):
-    id: int
     weaving_name: str

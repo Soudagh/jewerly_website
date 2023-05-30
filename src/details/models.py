@@ -1,14 +1,6 @@
 from sqlalchemy import Integer, Column, Text
 
 from src.database import Base
-from src.database import metadata
-
-category = (
-    "categories",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("category_name", Text, nullable=False),
-)
 
 
 class Brand(Base):

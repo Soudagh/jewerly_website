@@ -20,7 +20,6 @@ class Product(BaseModel):
 
 
 class ProductCreate(BaseModel):
-    id: int
     product_name: str
     brand: int
     category: int
