@@ -20,4 +20,3 @@ class OrderCreate(BaseModel):
     products_id: list
     status: str
     address: str
-    order_date: datetime

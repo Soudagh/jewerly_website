@@ -17,7 +17,6 @@ router = APIRouter(
 async def get_orders_by_user_id(user_id: int, session: AsyncSession = Depends(get_async_session)):
     query = select(order).where(order.c.user_id == user_id)
     result = await session.execute(query)
-
     return result.all()
 
 

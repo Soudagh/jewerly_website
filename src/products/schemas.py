@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel
 
 
@@ -14,6 +16,7 @@ class Product(BaseModel):
     style: int
     weight: int
     cost: int
+    date_of_creation: datetime
 
     class Config:
         orm_mode = True

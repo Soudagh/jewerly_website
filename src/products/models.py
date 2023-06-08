@@ -1,4 +1,6 @@
-from sqlalchemy import Integer, Column, Text, ForeignKey
+from datetime import datetime
+
+from sqlalchemy import Integer, Column, Text, ForeignKey, DateTime
 
 from src.database import Base
 
@@ -18,3 +20,4 @@ class Product(Base):
     style = Column(Integer, ForeignKey('styles.id'), nullable=True)
     weight = Column(Integer, nullable=False)
     cost = Column(Integer, nullable=False)
+    date_of_creation = Column(DateTime, default=datetime.utcnow())
