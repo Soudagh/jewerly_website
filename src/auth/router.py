@@ -20,7 +20,7 @@ async def get_user_by_id(user_id: int, session: AsyncSession = Depends(get_async
 
 
 @router.get("/get_all_users", response_model=List[UserModel])
-async def get_user_by_id(session: AsyncSession = Depends(get_async_session)):
+async def get_all_users(session: AsyncSession = Depends(get_async_session)):
     query = select(User).order_by(User.id)
     result = await session.execute(query)
     rows = len(result.all())
@@ -30,3 +30,4 @@ async def get_user_by_id(session: AsyncSession = Depends(get_async_session)):
         print(user.id)
         users.append(user)
     return users
+
