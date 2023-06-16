@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends
+import shutil
+
+from fastapi import APIRouter, Depends, UploadFile
 from pydantic.types import List
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,9 +16,22 @@ router = APIRouter(
 
 
 @router.post("/add_product")
-async def add_order(new_product: ProductCreate, session: AsyncSession = Depends(get_async_session)):
+async def add_product(new_product: ProductCreate, session: AsyncSession = Depends(get_async_session)):
     stmt = insert(ProductModel).values(**new_product.dict())
     await session.execute(stmt)
+    await session.commit()
+    return {"status": "success"}
+
+
+@router.post("/upload_image")
+async def upload_image(product_id: int, file: UploadFile, session: AsyncSession = Depends(get_async_session)):
+    print("wtf????????")
+    with open("media/"+file.filename, "wb") as image:
+        shutil.copyfileobj(file.file, image)
+
+    url = str("media/"+file.filename)
+    stmt = await session.get(ProductModel, product_id)
+    stmt.image_url = url
     await session.commit()
     return {"status": "success"}
 

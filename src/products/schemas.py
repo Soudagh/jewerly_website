@@ -10,10 +10,11 @@ class Product(BaseModel):
     category: int
     material: int
     material_color: int
-    cutting: int
-    stone: int
-    weaving: int
-    style: int
+    cutting: int | None
+    stone: int | None
+    weaving: int | None
+    style: int | None
+    image_url: str | None
     weight: int
     cost: int
     date_of_creation: datetime
@@ -28,9 +29,10 @@ class ProductCreate(BaseModel):
     category: int
     material: int
     material_color: int
-    cutting: int
-    stone: int
-    weaving: int
-    style: int
+    cutting: int | None
+    stone: int | None
+    weaving: int | None
+    style: int | None
+    image_url: str | None
     weight: int
     cost: int

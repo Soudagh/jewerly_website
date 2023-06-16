@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import Integer, Column, Text, ForeignKey, DateTime
+from sqlalchemy_utils import URLType
 
 from src.database import Base
 
@@ -20,4 +21,5 @@ class Product(Base):
     style = Column(Integer, ForeignKey('styles.id'), nullable=True)
     weight = Column(Integer, nullable=False)
     cost = Column(Integer, nullable=False)
+    image_url = Column(URLType, nullable=True)
     date_of_creation = Column(DateTime, default=datetime.utcnow())
