@@ -1,8 +1,8 @@
 FROM python:3.10
 
-RUN mkdir /jewerly_app
+RUN mkdir /yvelirka
 
-WORKDIR /jewerly_app
+WORKDIR /yvelirka
 
 COPY requirements.txt .
 
@@ -10,10 +10,9 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-RUN chmod a+x docker/*.sh
 
 RUN alembic upgrade head
 
-WORKDIR /src
+WORKDIR src
 
 CMD gunicorn main:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000
