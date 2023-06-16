@@ -3,8 +3,8 @@ from datetime import datetime
 from sqlalchemy import Table, Integer, Column, Text, DateTime, ForeignKey
 from sqlalchemy.types import ARRAY
 
-from src.auth.models import User
-from src.database import metadata
+from auth.models import User
+from database import metadata
 
 order = Table(
     "orders",

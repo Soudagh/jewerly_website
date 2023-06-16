@@ -3,9 +3,9 @@ from pydantic.types import List
 from sqlalchemy import select, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database import get_async_session
-from src.orders.models import order
-from src.orders.schemas import Order, OrderCreate
+from database import get_async_session
+from orders.models import order
+from orders.schemas import Order, OrderCreate
 
 router = APIRouter(
     prefix="/orders",

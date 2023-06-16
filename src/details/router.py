@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database import get_async_session
-from src.details.models import Brand, Category, Style, Color, Material, Stone, Cutting, Weaving
-from src.details.schemas import BrandCreate, CategoryCreate, StyleCreate, ColorCreate, MaterialCreate, StoneCreate, \
+from database import get_async_session
+from details.models import Brand, Category, Style, Color, Material, Stone, Cutting, Weaving
+from details.schemas import BrandCreate, CategoryCreate, StyleCreate, ColorCreate, MaterialCreate, StoneCreate, \
     CuttingCreate, WeavingCreate
 
 router = APIRouter(

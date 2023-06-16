@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 
-from src.auth.base_config import fastapi_users, auth_backend
-from src.auth.router import router as router_user
-from src.auth.schemas import UserRead, UserCreate
-from src.details.router import router as router_detail
-from src.orders.router import router as router_order
-from src.products.router import router as router_product
+from auth.base_config import fastapi_users, auth_backend
+from auth.router import router as router_user
+from auth.schemas import UserRead, UserCreate
+from details.router import router as router_detail
+from orders.router import router as router_order
+from products.router import router as router_product
 
 app = FastAPI(
     title="Jewerly App"

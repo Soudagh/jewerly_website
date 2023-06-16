@@ -1,6 +1,6 @@
 from sqlalchemy import Integer, Column, Text
 
-from src.database import Base
+from database import Base
 
 
 class Brand(Base):

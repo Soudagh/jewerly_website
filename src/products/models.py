@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import Integer, Column, Text, ForeignKey, DateTime
 from sqlalchemy_utils import URLType
 
-from src.database import Base
+from database import Base
 
 
 class Product(Base):

@@ -4,7 +4,7 @@ from fastapi_users.db import SQLAlchemyBaseUserTable
 from sqlalchemy import String, Integer, Column, Text, DateTime, Boolean, ForeignKey, JSON
 from sqlalchemy.types import ARRAY
 
-from src.database import Base
+from database import Base
 
 
 class Role(Base):

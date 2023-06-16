@@ -3,9 +3,9 @@ from pydantic.types import List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.auth.models import User
-from src.auth.schemas import UserModel
-from src.database import get_async_session
+from auth.models import User
+from auth.schemas import UserModel
+from database import get_async_session
 
 router = APIRouter(
     prefix="/users",

@@ -5,9 +5,9 @@ from pydantic.types import List
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database import get_async_session
-from src.products.models import Product as ProductModel
-from src.products.schemas import ProductCreate, Product
+from database import get_async_session
+from products.models import Product as ProductModel
+from products.schemas import ProductCreate, Product
 
 router = APIRouter(
     prefix="/products",
