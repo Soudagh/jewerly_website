@@ -25,7 +25,7 @@ class OrderCreate(BaseModel):
     address: str
 
 
-class OrderFilter(BaseModel):
+class OrderFilter(Filter):
     id: Optional[int]
     user_id: Optional[int]
     status: Optional[str]

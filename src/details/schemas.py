@@ -8,9 +8,6 @@ class Brand(BaseModel):
     id: int
     brand_name: str
 
-    custom_order_by: Optional[List[str]]
-    custom_search: Optional[str]
-
     class Config:
         orm_mode = True
 
