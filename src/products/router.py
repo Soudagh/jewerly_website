@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from database import get_async_session
 from fastapi import APIRouter, Depends
 from products.models import Product as ProductModel
@@ -41,10 +43,17 @@ async def get_products_by_id(products_ids, session: AsyncSession = Depends(get_a
 async def get_all_products(session: AsyncSession = Depends(get_async_session)):
     query = select(ProductModel).order_by(ProductModel.id)
     result = await session.execute(query)
-    rows = len(result.all())
     products: List[ProductModel] = []
-    for i in range(rows):
-        user = await session.get(ProductModel, i + 1)
-        print(user.id)
-        products.append(Product)
+    for product in result.scalars():
+        products.append(product)
     return products
+
+
+@router.get("/get_new_products", response_model=List[Product])
+async def get_new_products(session: AsyncSession = Depends(get_async_session)):
+    query = select(ProductModel).filter(ProductModel.date_of_creation > datetime.utcnow() - timedelta(days=31))
+    result = await session.execute(query)
+    new_products: List[ProductModel] = []
+    for new_product in result.scalars():
+        new_products.append(new_product)
+    return new_products

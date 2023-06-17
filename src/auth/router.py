@@ -1,11 +1,10 @@
+from auth.models import User
+from auth.schemas import UserModel
+from database import get_async_session
 from fastapi import APIRouter, Depends
 from pydantic.types import List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from auth.models import User
-from auth.schemas import UserModel
-from database import get_async_session
 
 router = APIRouter(
     prefix="/users",
@@ -23,11 +22,8 @@ async def get_user_by_id(user_id: int, session: AsyncSession = Depends(get_async
 async def get_all_users(session: AsyncSession = Depends(get_async_session)):
     query = select(User).order_by(User.id)
     result = await session.execute(query)
-    rows = len(result.all())
     users: List[UserModel] = []
-    for i in range(rows):
-        user = await session.get(User, i + 1)
-        print(user.id)
+    for user in result.scalars():
         users.append(user)
     return users
 
