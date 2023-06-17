@@ -28,7 +28,6 @@ class OrderCreate(BaseModel):
 class OrderFilter(BaseModel):
     id: Optional[int]
     user_id: Optional[int]
-    products_id: Optional[list]
     status: Optional[str]
     address: Optional[str]
     order_date: Optional[datetime]
