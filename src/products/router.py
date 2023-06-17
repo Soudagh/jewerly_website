@@ -5,11 +5,10 @@ from fastapi import APIRouter, Depends
 from fastapi_filter import FilterDepends
 from products.models import Product as ProductModel
 from products.schemas import ProductCreate, Product
+from products.schemas import ProductFilter
 from pydantic.types import List
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from src.products.schemas import ProductFilter
 
 router = APIRouter(
     prefix="/products",

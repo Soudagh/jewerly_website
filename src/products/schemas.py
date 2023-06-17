@@ -4,10 +4,9 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi_filter.contrib.sqlalchemy import Filter
+from products.models import Product as ProductModel
 from pydantic import BaseModel
 from pydantic.types import List
-
-from src.products.models import Product as ProductModel
 
 
 class Product(BaseModel):
