@@ -1,11 +1,10 @@
+from database import get_async_session
 from fastapi import APIRouter, Depends
+from orders.models import order
+from orders.schemas import Order, OrderCreate
 from pydantic.types import List
 from sqlalchemy import select, insert
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from database import get_async_session
-from orders.models import order
-from orders.schemas import Order, OrderCreate
 
 router = APIRouter(
     prefix="/orders",
@@ -26,3 +25,10 @@ async def add_order(new_order: OrderCreate, session: AsyncSession = Depends(get_
     await session.execute(stmt)
     await session.commit()
     return {"status": "success"}
+
+
+@router.get("/get_orders", response_model=List[Order])
+async def get_orders(session: AsyncSession = Depends(get_async_session)):
+    query = select(order)
+    result = await session.execute(query)
+    return result.scalars().all()

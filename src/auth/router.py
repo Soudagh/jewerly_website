@@ -2,9 +2,13 @@ from auth.models import User
 from auth.schemas import UserModel
 from database import get_async_session
 from fastapi import APIRouter, Depends
+
 from pydantic.types import List
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from src.products.router import get_products_by_id
+from src.products.schemas import Product
 
 router = APIRouter(
     prefix="/users",
@@ -22,8 +26,47 @@ async def get_user_by_id(user_id: int, session: AsyncSession = Depends(get_async
 async def get_all_users(session: AsyncSession = Depends(get_async_session)):
     query = select(User).order_by(User.id)
     result = await session.execute(query)
-    users: List[UserModel] = []
-    for user in result.scalars():
-        users.append(user)
-    return users
+    return result.scalars().all()
+
+
+@router.get("/get_user_cart", response_model=List[Product] | List[None])
+async def get_user_cart(user_id: int, session: AsyncSession = Depends(get_async_session)):
+    query = await session.get(User, user_id)
+    if query.cart is None:
+        return []
+    user_cart = await get_products_by_id(" ".join(str(product) for product in query.cart), session)
+    return user_cart
+
+
+@router.get("/get_user_favorite", response_model=List[Product] | List[None])
+async def get_user_favorite(user_id: int, session: AsyncSession = Depends(get_async_session)):
+    query = await session.get(User, user_id)
+    if query.favorite is None:
+        return []
+    user_favorite = await get_products_by_id(" ".join(str(product) for product in query.favorite), session)
+    return user_favorite
+
+
+@router.post("/add_product_to_favorite")
+async def add_product_to_favorite(user_id: int, product_id: int, session: AsyncSession = Depends(get_async_session)):
+    favorite_new = await get_user_favorite(user_id, session)
+    favorite_new_ids = [favorite_product.id for favorite_product in favorite_new]
+    favorite_new_ids.append(product_id)
+    stmt = update(User).where(User.id == user_id).values(favorite=favorite_new_ids)
+    await session.execute(stmt)
+    await session.commit()
+    return {"status": "success"}
+
+
+@router.post("/add_product_to_cart")
+async def add_product_to_cart(user_id: int, product_id: int, session: AsyncSession = Depends(get_async_session)):
+    cart_new = await get_user_cart(user_id, session)
+    cart_new_ids = [cart_product.id for cart_product in cart_new]
+    cart_new_ids.append(product_id)
+    stmt = update(User).where(User.id == user_id).values(cart=cart_new_ids)
+    await session.execute(stmt)
+    await session.commit()
+    return {"status": "success"}
+
+
 

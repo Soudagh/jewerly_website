@@ -1,9 +1,8 @@
 from datetime import datetime
 
+from database import Base
 from sqlalchemy import Integer, Column, Text, ForeignKey, DateTime
 from sqlalchemy_utils import URLType
-
-from database import Base
 
 
 class Product(Base):

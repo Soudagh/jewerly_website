@@ -2,11 +2,14 @@ from datetime import datetime, timedelta
 
 from database import get_async_session
 from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 from products.models import Product as ProductModel
 from products.schemas import ProductCreate, Product
 from pydantic.types import List
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from src.products.schemas import ProductFilter
 
 router = APIRouter(
     prefix="/products",
@@ -30,30 +33,29 @@ async def get_product_by_id(product_id: int, session: AsyncSession = Depends(get
 
 @router.get("/get_products_by_id", response_model=List[Product] | List[None])
 async def get_products_by_id(products_ids, session: AsyncSession = Depends(get_async_session)):
-    products_ids = list(map(int, products_ids.split()))
+    products_ids = set(map(int, products_ids.split()))
     products = []
     for i in products_ids:
         query = await session.get(ProductModel, i)
         products.append(query)
-    print(products, type(products))
     return products
 
 
 @router.get("/get_all_products", response_model=List[Product])
-async def get_all_products(session: AsyncSession = Depends(get_async_session)):
-    query = select(ProductModel).order_by(ProductModel.id)
+async def get_all_products(session: AsyncSession = Depends(get_async_session),
+                           product_filter: ProductFilter = FilterDepends(ProductFilter)):
+    query = select(ProductModel)
+    query = product_filter.filter(query)
+    query = product_filter.sort(query)
     result = await session.execute(query)
-    products: List[ProductModel] = []
-    for product in result.scalars():
-        products.append(product)
-    return products
+    return result.scalars().all()
 
 
 @router.get("/get_new_products", response_model=List[Product])
-async def get_new_products(session: AsyncSession = Depends(get_async_session)):
+async def get_new_products(session: AsyncSession = Depends(get_async_session),
+                           product_filter: ProductFilter = FilterDepends(ProductFilter)):
     query = select(ProductModel).filter(ProductModel.date_of_creation > datetime.utcnow() - timedelta(days=31))
+    query = product_filter.filter(query)
+    query = product_filter.sort(query)
     result = await session.execute(query)
-    new_products: List[ProductModel] = []
-    for new_product in result.scalars():
-        new_products.append(new_product)
-    return new_products
+    return result.scalars().all()

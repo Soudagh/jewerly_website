@@ -49,5 +49,19 @@ class UserCreate(schemas.BaseUserCreate):
     is_verified: Optional[bool] = False
 
 
-class UserUpdate(schemas.BaseUserUpdate):
-    pass
+class UserFilter(schemas.BaseUserUpdate):
+    id: Optional[int]
+    role_id: Optional[int]
+    email: Optional[str]
+    user_name: Optional[str]
+    user_surname: Optional[str]
+    favorite: Optional[list] | Optional[None]
+    cart: Optional[list] | Optional[None]
+    registration_date: Optional[datetime]
+
+    is_active: Optional[bool] = True
+    is_superuser: Optional[bool] = False
+    is_verified: Optional[bool] = False
+
+    class Config:
+        orm_mode = True
