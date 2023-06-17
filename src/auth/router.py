@@ -2,13 +2,11 @@ from auth.models import User
 from auth.schemas import UserModel
 from database import get_async_session
 from fastapi import APIRouter, Depends
-
+from products.router import get_products_by_id
+from products.schemas import Product
 from pydantic.types import List
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from src.products.router import get_products_by_id
-from src.products.schemas import Product
 
 router = APIRouter(
     prefix="/users",
