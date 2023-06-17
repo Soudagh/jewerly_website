@@ -3,6 +3,8 @@ from details.models import Brand, Category, Style, Color, Material, Stone, Cutti
 from details.schemas import Brand as BrandModel
 from details.schemas import BrandCreate, CategoryCreate, StyleCreate, ColorCreate, MaterialCreate, StoneCreate, \
     CuttingCreate, WeavingCreate
+from details.schemas import BrandFilter, CategoryFilter, StyleFilter, ColorFilter, MaterialFilter, StoneFilter, \
+    CuttingFilter, WeavingFilter
 from details.schemas import Category as CategoryModel
 from details.schemas import Color as ColorModel
 from details.schemas import Cutting as CuttingModel
@@ -15,9 +17,6 @@ from fastapi_filter import FilterDepends
 from pydantic.types import List
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from src.details.schemas import BrandFilter, CategoryFilter, StyleFilter, ColorFilter, MaterialFilter, StoneFilter, \
-    CuttingFilter, WeavingFilter
 
 router = APIRouter(
     prefix="/details",
