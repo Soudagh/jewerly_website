@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
 
 from auth.base_config import fastapi_users, auth_backend
 from auth.router import router as router_user
@@ -10,6 +11,24 @@ from products.router import router as router_product
 app = FastAPI(
     title="Jewerly App"
 )
+
+origins = [
+    "http://localhost:3000",
+    "http://localhost:8080",
+    "http://localhost:3001",
+    "http://localhost:8000",
+    "https://jewerly-service.onrender.com",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
+    allow_headers=["Content-Type", "Set-Cookie", "Access-Control-Allow-Headers", "Access-Control-Allow-Origin",
+                   "Authorization"],
+)
+
 
 app.include_router(
     fastapi_users.get_auth_router(auth_backend),

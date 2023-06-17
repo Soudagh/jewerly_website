@@ -1,10 +1,11 @@
-alembic
+alembic~=1.11.1
 asyncpg
-fastapi[all]
+fastapi[all]~=0.95.2
 fastapi-users[sqlalchemy]
 fastapi-filter[sqlalchemy]
-python-dotenv
+python-dotenv~=1.0.0
 sqlalchemy==2.0.16
 pydantic==1.10.9
 gunicorn
 sqlalchemy_utils
+starlette==0.28.0
