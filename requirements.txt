@@ -8,4 +8,4 @@ sqlalchemy==2.0.16
 pydantic==1.10.9
 gunicorn
 sqlalchemy_utils
-starlette==0.28.0
+starlette==0.27.0
