@@ -1,6 +1,9 @@
 from datetime import datetime
+from typing import Optional
 
+from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel
+from pydantic.types import List
 
 
 class Order(BaseModel):
@@ -20,3 +23,20 @@ class OrderCreate(BaseModel):
     products_id: list
     status: str
     address: str
+
+
+class OrderFilter(BaseModel):
+    id: Optional[int]
+    user_id: Optional[int]
+    products_id: Optional[list]
+    status: Optional[str]
+    address: Optional[str]
+    order_date: Optional[datetime]
+
+    custom_order_by: Optional[List[str]]
+    custom_search: Optional[str]
+
+    class Constants(Filter.Constants):
+        model = Order
+        ordering_field_name = "custom_order_by"
+        search_field_name = "custom_search"

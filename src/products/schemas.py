@@ -4,7 +4,6 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from products.models import Product as ProductModel
 from pydantic import BaseModel
 from pydantic.types import List
 
@@ -60,7 +59,7 @@ class ProductFilter(Filter):
     custom_search: Optional[str]
 
     class Constants(Filter.Constants):
-        model = ProductModel
+        model = Product
         ordering_field_name = "custom_order_by"
         search_field_name = "custom_search"
         search_model_fields = ["product_name"]

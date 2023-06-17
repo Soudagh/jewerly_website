@@ -1,7 +1,8 @@
 from auth.models import User
-from auth.schemas import UserModel
+from auth.schemas import UserModel, UserFilter
 from database import get_async_session
 from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 from products.router import get_products_by_id
 from products.schemas import Product
 from pydantic.types import List
@@ -20,9 +21,12 @@ async def get_user_by_id(user_id: int, session: AsyncSession = Depends(get_async
     return query
 
 
-@router.get("/get_all_users", response_model=List[UserModel])
-async def get_all_users(session: AsyncSession = Depends(get_async_session)):
+@router.get("/get_all_users", response_model=List[UserModel] | List[None])
+async def get_all_users(session: AsyncSession = Depends(get_async_session),
+                        user_filter: UserFilter = FilterDepends(UserFilter)):
     query = select(User).order_by(User.id)
+    query = user_filter.filter(query)
+    query = user_filter.sort(query)
     result = await session.execute(query)
     return result.scalars().all()
 

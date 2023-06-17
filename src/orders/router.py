@@ -1,7 +1,9 @@
 from database import get_async_session
 from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 from orders.models import order
 from orders.schemas import Order, OrderCreate
+from orders.schemas import OrderFilter
 from pydantic.types import List
 from sqlalchemy import select, insert
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -27,8 +29,11 @@ async def add_order(new_order: OrderCreate, session: AsyncSession = Depends(get_
     return {"status": "success"}
 
 
-@router.get("/get_orders", response_model=List[Order])
-async def get_orders(session: AsyncSession = Depends(get_async_session)):
-    query = select(order)
+@router.get("/get_orders", response_model=List[Order] | List[None])
+async def get_orders(session: AsyncSession = Depends(get_async_session),
+                     order_filter: OrderFilter = FilterDepends(OrderFilter)):
+    query = select(order).order_by(order.id)
+    query = order_filter.filter(query)
+    query = order_filter.sort(query)
     result = await session.execute(query)
     return result.scalars().all()
