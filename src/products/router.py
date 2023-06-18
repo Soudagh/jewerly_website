@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from database import get_async_session
 from fastapi import APIRouter, Depends
 from fastapi_filter import FilterDepends
+from fastapi_pagination import Page, paginate
 from products.models import Product as ProductModel
 from products.schemas import ProductCreate, Product
 from products.schemas import ProductFilter
@@ -40,21 +41,21 @@ async def get_products_by_id(products_ids, session: AsyncSession = Depends(get_a
     return products
 
 
-@router.get("/get_all_products", response_model=List[Product])
+@router.get("/get_all_products", response_model=Page[Product])
 async def get_all_products(session: AsyncSession = Depends(get_async_session),
                            product_filter: ProductFilter = FilterDepends(ProductFilter)):
     query = select(ProductModel)
     query = product_filter.filter(query)
     query = product_filter.sort(query)
     result = await session.execute(query)
-    return result.scalars().all()
+    return paginate(result.scalars().all())
 
 
-@router.get("/get_new_products", response_model=List[Product])
+@router.get("/get_new_products", response_model=Page[Product])
 async def get_new_products(session: AsyncSession = Depends(get_async_session),
                            product_filter: ProductFilter = FilterDepends(ProductFilter)):
     query = select(ProductModel).filter(ProductModel.date_of_creation > datetime.utcnow() - timedelta(days=31))
     query = product_filter.filter(query)
     query = product_filter.sort(query)
     result = await session.execute(query)
-    return result.scalars().all()
+    return paginate(result.scalars().all())

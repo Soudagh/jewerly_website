@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi_pagination import add_pagination
 from starlette.middleware.cors import CORSMiddleware
 
 from auth.base_config import fastapi_users, auth_backend
@@ -49,6 +50,8 @@ app.include_router(router_detail)
 app.include_router(router_user)
 
 current_user = fastapi_users.current_user()
+
+add_pagination(app)
 
 
 
