@@ -20,7 +20,7 @@ class Product(BaseModel):
     weaving: int | None
     style: int | None
     image_url: str | None
-    weight: int
+    weight: float
     cost: int
     date_of_creation: datetime
 
@@ -39,7 +39,7 @@ class ProductCreate(BaseModel):
     weaving: int | None
     style: int | None
     image_url: str | None
-    weight: int
+    weight: float
     cost: int
 
 
@@ -53,7 +53,7 @@ class ProductFilter(Filter):
     stone: Optional[int] | Optional[None]
     weaving: Optional[int] | Optional[None]
     style: Optional[int] | Optional[None]
-    weight: Optional[int]
+    weight: Optional[float]
     cost: Optional[int]
     custom_order_by: Optional[List[str]]
     custom_search: Optional[str]
