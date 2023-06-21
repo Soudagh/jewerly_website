@@ -43,6 +43,20 @@ class ProductCreate(BaseModel):
     cost: int
 
 
+class ProductUpdate(BaseModel):
+    brand: int
+    category: int
+    material: int
+    material_color: int
+    cutting: int | None
+    stone: int | None
+    weaving: int | None
+    style: int | None
+    image_url: str | None
+    weight: float
+    cost: int
+
+
 class ProductFilter(Filter):
     product_name: Optional[str]
     brand: Optional[int]

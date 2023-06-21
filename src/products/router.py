@@ -1,12 +1,11 @@
 from datetime import datetime, timedelta
 
 from database import get_async_session
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi_filter import FilterDepends
 from fastapi_pagination import Page, paginate
 from products.models import Product as ProductModel
-from products.schemas import ProductCreate, Product
-from products.schemas import ProductFilter
+from products.schemas import ProductCreate, Product, ProductUpdate, ProductFilter
 from pydantic.types import List
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,6 +22,29 @@ async def add_product(new_product: ProductCreate, session: AsyncSession = Depend
     await session.execute(stmt)
     await session.commit()
     return {"status": "success"}
+
+
+@router.delete("/delete_product")
+async def delete_product(product_id: int, session: AsyncSession = Depends(get_async_session)):
+    product = await get_product_by_id(product_id, session)
+    await session.delete(product)
+    await session.commit()
+    return {"status": "success"}
+
+
+@router.patch("/update_product", response_model=Product)
+async def update_product(product_id: int, updated_product: ProductUpdate,
+                         session: AsyncSession = Depends(get_async_session)):
+    product = await session.get(ProductModel, product_id)
+    if not product:
+        raise HTTPException(status_code=404, detail="User not found")
+    product_data = updated_product.dict(exclude_unset=True)
+    for key, value in product_data.items():
+        setattr(product, key, value)
+    session.add(product)
+    await session.commit()
+    await session.refresh(product)
+    return product
 
 
 @router.get("/get_product_by_id", response_model=Product | None)

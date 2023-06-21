@@ -39,3 +39,9 @@ class OrderFilter(Filter):
         model = Order
         ordering_field_name = "custom_order_by"
         search_field_name = "custom_search"
+
+
+class OrderUpdate(BaseModel):
+    products_id: list
+    status: str
+    address: str
