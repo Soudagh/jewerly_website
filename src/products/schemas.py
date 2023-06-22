@@ -7,6 +7,8 @@ from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel
 from pydantic.types import List
 
+from src.products.models import Product as ProductModel
+
 
 class Product(BaseModel):
     id: int
@@ -44,6 +46,7 @@ class ProductCreate(BaseModel):
 
 
 class ProductUpdate(BaseModel):
+    product_name: str
     brand: int
     category: int
     material: int
@@ -73,7 +76,7 @@ class ProductFilter(Filter):
     custom_search: Optional[str]
 
     class Constants(Filter.Constants):
-        model = Product
+        model = ProductModel
         ordering_field_name = "custom_order_by"
         search_field_name = "custom_search"
         search_model_fields = ["product_name"]

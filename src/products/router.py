@@ -37,7 +37,7 @@ async def update_product(product_id: int, updated_product: ProductUpdate,
                          session: AsyncSession = Depends(get_async_session)):
     product = await session.get(ProductModel, product_id)
     if not product:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Product not found")
     product_data = updated_product.dict(exclude_unset=True)
     for key, value in product_data.items():
         setattr(product, key, value)
@@ -55,7 +55,7 @@ async def get_product_by_id(product_id: int, session: AsyncSession = Depends(get
 
 @router.get("/get_products_by_id", response_model=List[Product] | List[None])
 async def get_products_by_id(products_ids, session: AsyncSession = Depends(get_async_session)):
-    products_ids = set(map(int, products_ids.split()))
+    products_ids = list(map(int, products_ids.split()))
     products = []
     for i in products_ids:
         query = await session.get(ProductModel, i)

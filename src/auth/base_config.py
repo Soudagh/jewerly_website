@@ -1,10 +1,9 @@
-from fastapi_users import FastAPIUsers
-from fastapi_users.authentication import CookieTransport, AuthenticationBackend
-from fastapi_users.authentication import JWTStrategy
-
 from auth.manager import get_user_manager
 from auth.models import User
 from config import SECRET
+from fastapi_users import FastAPIUsers
+from fastapi_users.authentication import CookieTransport, AuthenticationBackend
+from fastapi_users.authentication import JWTStrategy
 
 cookie_transport = CookieTransport(cookie_name="jewerly", cookie_max_age=3600)
 
@@ -25,4 +24,3 @@ fastapi_users = FastAPIUsers[User, int](
 )
 
 current_user = fastapi_users.current_user()
-#
