@@ -51,7 +51,7 @@ class UserCreate(schemas.BaseUserCreate):
     is_verified: Optional[bool] = False
 
 
-class UserFilter(schemas.BaseUserUpdate):
+class UserFilter(Filter):
     id: Optional[int]
     role_id: Optional[int]
     email: Optional[str]
