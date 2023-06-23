@@ -57,8 +57,6 @@ class UserFilter(Filter):
     email: Optional[str]
     user_name: Optional[str]
     user_surname: Optional[str]
-    favorite: Optional[list] | Optional[None]
-    cart: Optional[list] | Optional[None]
     registration_date: Optional[datetime]
 
     is_active: Optional[bool] = True
