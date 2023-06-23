@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 from fastapi_filter import FilterDepends
 from products.router import get_products_by_id
 from products.schemas import Product
-from pydantic.types import List
+from pydantic.types import List, Tuple
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -31,12 +31,18 @@ async def get_all_users(session: AsyncSession = Depends(get_async_session),
     return result.scalars().all()
 
 
-@router.get("/get_user_cart", response_model=List[Product] | List[None])
+@router.get("/get_user_cart", response_model=List[Tuple[Product, int]])
 async def get_user_cart(user_id: int, session: AsyncSession = Depends(get_async_session)):
     query = await session.get(User, user_id)
-    if query.cart is None:
-        return []
-    user_cart = await get_products_by_id(" ".join(str(product) for product in query.cart), session)
+    if query.cart is None or len(query.cart) == 0:
+        return list()
+
+    user_cart_ids = await get_products_by_id(" ".join(str(product) for product in query.cart), session)
+    user_cart_ids_set = set(user_cart_ids)
+    user_cart = list()
+    for id in user_cart_ids_set:
+        user_cart.append((id, user_cart_ids.count(id)))
+
     return user_cart
 
 
@@ -71,4 +77,18 @@ async def add_product_to_cart(user_id: int, product_id: int, session: AsyncSessi
     return {"status": "success"}
 
 
+@router.post("/delete_user_cart")
+async def delete_user_cart(user_id: int, session: AsyncSession = Depends(get_async_session)):
+    stmt = update(User).where(User.id == user_id).values(cart=[])
+    await session.execute(stmt)
+    await session.commit()
+    return {"status": "success"}
+
+
+@router.post("/delete_user_cart")
+async def delete_user_favorite(user_id: int, session: AsyncSession = Depends(get_async_session)):
+    stmt = update(User).where(User.id == user_id).values(favorite=[])
+    await session.execute(stmt)
+    await session.commit()
+    return {"status": "success"}
 
