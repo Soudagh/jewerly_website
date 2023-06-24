@@ -40,8 +40,8 @@ async def get_user_cart(user_id: int, session: AsyncSession = Depends(get_async_
     user_cart_ids = await get_products_by_id(" ".join(str(product) for product in query.cart), session)
     user_cart_ids_set = set(user_cart_ids)
     user_cart = list()
-    for id in user_cart_ids_set:
-        user_cart.append((id, user_cart_ids.count(id)))
+    for product in user_cart_ids_set:
+        user_cart.append((product, user_cart_ids.count(product)))
 
     return user_cart
 
@@ -67,26 +67,38 @@ async def add_product_to_favorite(user_id: int, product_id: int, session: AsyncS
 
 
 @router.post("/add_product_to_cart")
-async def add_product_to_cart(user_id: int, product_id: int, session: AsyncSession = Depends(get_async_session)):
+async def add_product_to_cart(user_id: int, product_id: int, count: int, session: AsyncSession = Depends(get_async_session)):
     cart_new = await get_user_cart(user_id, session)
-    cart_new_ids = [cart_product.id for cart_product in cart_new]
-    cart_new_ids.append(product_id)
+    cart_new_ids = [cart_product[0].id for cart_product in cart_new]
+    for i in range(count):
+        cart_new_ids.append(product_id)
+
     stmt = update(User).where(User.id == user_id).values(cart=cart_new_ids)
     await session.execute(stmt)
     await session.commit()
     return {"status": "success"}
 
 
-@router.post("/delete_user_cart")
-async def delete_user_cart(user_id: int, session: AsyncSession = Depends(get_async_session)):
+# @router.post("/delete_product_from_cart")
+# async def delete_product_from_cart(user_id, product_id: int, session: AsyncSession = Depends(get_async_session)):
+#     prev_cart = await get_user_cart(user_id, session)
+#     if len(prev_cart) == 0:
+#         return {"details": "Cart is empty"}
+#
+#     if product_id in prev_cart[0]:
+#         prev_cart[0].remove(product_id)
+
+
+@router.post("/clear_user_cart")
+async def clear_user_cart(user_id: int, session: AsyncSession = Depends(get_async_session)):
     stmt = update(User).where(User.id == user_id).values(cart=[])
     await session.execute(stmt)
     await session.commit()
     return {"status": "success"}
 
 
-@router.post("/delete_user_cart")
-async def delete_user_favorite(user_id: int, session: AsyncSession = Depends(get_async_session)):
+@router.post("/clear_user_favorite")
+async def clear_user_favorite(user_id: int, session: AsyncSession = Depends(get_async_session)):
     stmt = update(User).where(User.id == user_id).values(favorite=[])
     await session.execute(stmt)
     await session.commit()
