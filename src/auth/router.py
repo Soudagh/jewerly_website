@@ -67,7 +67,7 @@ async def add_product_to_favorite(user_id: int, product_id: int, session: AsyncS
 
 
 @router.post("/add_product_to_cart")
-async def add_product_to_cart(user_id: int, product_id: int, count: int, session: AsyncSession = Depends(get_async_session)):
+async def add_product_to_cart(user_id: int, product_id: int, count: int = 1, session: AsyncSession = Depends(get_async_session)):
     cart_new = await get_user_cart(user_id, session)
     cart_new_ids = [cart_product[0].id for cart_product in cart_new]
     for i in range(count):
