@@ -1,5 +1,6 @@
 from auth.models import User
 from auth.schemas import UserModel, UserFilter
+from auth.utils import ids_initialize
 from database import get_async_session
 from fastapi import APIRouter, Depends
 from fastapi_filter import FilterDepends
@@ -69,7 +70,10 @@ async def add_product_to_favorite(user_id: int, product_id: int, session: AsyncS
 @router.post("/add_product_to_cart")
 async def add_product_to_cart(user_id: int, product_id: int, count: int = 1, session: AsyncSession = Depends(get_async_session)):
     cart_new = await get_user_cart(user_id, session)
-    cart_new_ids = [cart_product[0].id for cart_product in cart_new]
+    if not cart_new:
+        return {"details": "Cart is empty"}
+    cart_new_ids = ids_initialize(cart_new)
+
     for i in range(count):
         cart_new_ids.append(product_id)
 
@@ -79,14 +83,28 @@ async def add_product_to_cart(user_id: int, product_id: int, count: int = 1, ses
     return {"status": "success"}
 
 
-# @router.post("/delete_product_from_cart")
-# async def delete_product_from_cart(user_id, product_id: int, session: AsyncSession = Depends(get_async_session)):
-#     prev_cart = await get_user_cart(user_id, session)
-#     if len(prev_cart) == 0:
-#         return {"details": "Cart is empty"}
-#
-#     if product_id in prev_cart[0]:
-#         prev_cart[0].remove(product_id)
+@router.post("/delete_product_from_cart")
+async def delete_product_from_cart(user_id: int, product_id: int, count: int, session: AsyncSession = Depends(get_async_session)):
+    prev_cart = await get_user_cart(user_id, session)
+    if not prev_cart:
+        return {"details": "Cart is empty"}
+    prev_cart_ids = ids_initialize(prev_cart)
+
+    product_count = prev_cart_ids.count(product_id)
+    if product_count != 0:
+        for i in range(count):
+            prev_cart_ids.remove(product_id)
+            count -= 1
+            product_count -=1
+            if count == 0 or product_count == 0:
+                break
+        stmt = update(User).where(User.id == user_id).values(cart=prev_cart_ids)
+        await session.execute(stmt)
+        await session.commit()
+        return {"status": "success"}
+
+    else:
+        return {"details": "Product is not in cart"}
 
 
 @router.post("/clear_user_cart")
@@ -103,4 +121,3 @@ async def clear_user_favorite(user_id: int, session: AsyncSession = Depends(get_
     await session.execute(stmt)
     await session.commit()
     return {"status": "success"}
-
