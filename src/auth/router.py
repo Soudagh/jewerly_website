@@ -1,6 +1,6 @@
 from auth.models import User
 from auth.schemas import UserModel, UserFilter
-from auth.utils import ids_initialize
+from auth.utils import ids_initialize, ids_initialize_with_count
 from database import get_async_session
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_filter import FilterDepends
@@ -63,6 +63,9 @@ async def get_user_favorite(user_id: int, session: AsyncSession = Depends(get_as
 async def add_product_to_favorite(user_id: int, product_id: int, session: AsyncSession = Depends(get_async_session)):
     favorite_new = await get_user_favorite(user_id, session)
     favorite_new_ids = [favorite_product.id for favorite_product in favorite_new]
+    if product_id in favorite_new_ids:
+        return {"detail": "Product already in favorite"}
+
     favorite_new_ids.append(product_id)
     stmt = update(User).where(User.id == user_id).values(favorite=favorite_new_ids)
     await session.execute(stmt)
@@ -74,9 +77,8 @@ async def add_product_to_favorite(user_id: int, product_id: int, session: AsyncS
 async def add_product_to_cart(user_id: int, product_id: int, count: int = 1,
                               session: AsyncSession = Depends(get_async_session)):
     cart_new = await get_user_cart(user_id, session)
-    if not cart_new:
-        cart_new = []
-    cart_new_ids = ids_initialize(cart_new)
+
+    cart_new_ids = ids_initialize_with_count(cart_new)
 
     for i in range(count):
         cart_new_ids.append(product_id)
@@ -93,7 +95,7 @@ async def delete_product_from_cart(user_id: int, product_id: int, count: int,
     prev_cart = await get_user_cart(user_id, session)
     if not prev_cart:
         raise HTTPException(status_code=404, detail="Cart is empty")
-    prev_cart_ids = ids_initialize(prev_cart)
+    prev_cart_ids = ids_initialize_with_count(prev_cart)
 
     product_count = prev_cart_ids.count(product_id)
     if product_count != 0:
@@ -110,6 +112,26 @@ async def delete_product_from_cart(user_id: int, product_id: int, count: int,
 
     else:
         return {"details": "Product is not in cart"}
+
+
+@router.post("/delete_product_from_favorite")
+async def delete_product_from_favorite(user_id: int, product_id: int,
+                                       session: AsyncSession = Depends(get_async_session)):
+    favorite = await get_user_favorite(user_id, session)
+    print(favorite)
+    if not favorite:
+        raise HTTPException(status_code=404, detail="Favorite is empty")
+
+    favorite_ids = ids_initialize(favorite)
+
+    if product_id in favorite_ids:
+        favorite_ids.remove(product_id)
+        stmt = update(User).where(User.id == user_id).values(favorite=favorite_ids)
+        await session.execute(stmt)
+        await session.commit()
+        return {"status": "success"}
+    else:
+        return {"details": "Product is not in favorite"}
 
 
 @router.post("/clear_user_cart")
