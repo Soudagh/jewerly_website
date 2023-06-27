@@ -2,13 +2,14 @@ from auth.models import User
 from auth.schemas import UserModel, UserFilter
 from auth.utils import ids_initialize
 from database import get_async_session
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi_filter import FilterDepends
 from products.router import get_products_by_id
 from products.schemas import Product
 from pydantic.types import List, Tuple
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+
 
 router = APIRouter(
     prefix="/users",
@@ -18,8 +19,10 @@ router = APIRouter(
 
 @router.get("/get_user_by_id", response_model=UserModel)
 async def get_user_by_id(user_id: int, session: AsyncSession = Depends(get_async_session)):
-    query = await session.get(User, user_id)
-    return query
+    user = await session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
 
 
 @router.get("/get_all_users", response_model=List[UserModel] | List[None])
@@ -68,10 +71,11 @@ async def add_product_to_favorite(user_id: int, product_id: int, session: AsyncS
 
 
 @router.post("/add_product_to_cart")
-async def add_product_to_cart(user_id: int, product_id: int, count: int = 1, session: AsyncSession = Depends(get_async_session)):
+async def add_product_to_cart(user_id: int, product_id: int, count: int = 1,
+                              session: AsyncSession = Depends(get_async_session)):
     cart_new = await get_user_cart(user_id, session)
     if not cart_new:
-        return {"details": "Cart is empty"}
+        cart_new = []
     cart_new_ids = ids_initialize(cart_new)
 
     for i in range(count):
@@ -84,10 +88,11 @@ async def add_product_to_cart(user_id: int, product_id: int, count: int = 1, ses
 
 
 @router.post("/delete_product_from_cart")
-async def delete_product_from_cart(user_id: int, product_id: int, count: int, session: AsyncSession = Depends(get_async_session)):
+async def delete_product_from_cart(user_id: int, product_id: int, count: int,
+                                   session: AsyncSession = Depends(get_async_session)):
     prev_cart = await get_user_cart(user_id, session)
     if not prev_cart:
-        return {"details": "Cart is empty"}
+        raise HTTPException(status_code=404, detail="Cart is empty")
     prev_cart_ids = ids_initialize(prev_cart)
 
     product_count = prev_cart_ids.count(product_id)
@@ -95,7 +100,7 @@ async def delete_product_from_cart(user_id: int, product_id: int, count: int, se
         for i in range(count):
             prev_cart_ids.remove(product_id)
             count -= 1
-            product_count -=1
+            product_count -= 1
             if count == 0 or product_count == 0:
                 break
         stmt = update(User).where(User.id == user_id).values(cart=prev_cart_ids)

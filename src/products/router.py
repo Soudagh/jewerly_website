@@ -49,8 +49,10 @@ async def update_product(product_id: int, updated_product: ProductUpdate,
 
 @router.get("/get_product_by_id", response_model=Product | None)
 async def get_product_by_id(product_id: int, session: AsyncSession = Depends(get_async_session)):
-    query = await session.get(ProductModel, product_id)
-    return query
+    product = await session.get(ProductModel, product_id)
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return product
 
 
 @router.get("/get_products_by_id", response_model=List[Product] | List[None])
@@ -58,8 +60,8 @@ async def get_products_by_id(products_ids, session: AsyncSession = Depends(get_a
     products_ids = list(map(int, products_ids.split()))
     products = []
     for i in products_ids:
-        query = await session.get(ProductModel, i)
-        products.append(query)
+        product = await get_product_by_id(i, session)
+        products.append(product)
     return products
 
 
