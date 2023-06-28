@@ -71,6 +71,8 @@ class ProductFilter(Filter):
     style: Optional[int] | Optional[None]
     weight: Optional[float]
     cost: Optional[int]
+    cost__lte: Optional[int]
+    cost__gte: Optional[int]
     custom_order_by: Optional[List[str]]
     custom_search: Optional[str]
 
