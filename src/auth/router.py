@@ -37,11 +37,11 @@ async def get_all_users(session: AsyncSession = Depends(get_async_session),
 
 @router.get("/get_user_cart", response_model=List[Tuple[Product, int]])
 async def get_user_cart(user_id: int, session: AsyncSession = Depends(get_async_session)):
-    query = await session.get(User, user_id)
-    if query.cart is None or len(query.cart) == 0:
+    cart = (await session.get(User, user_id)).cart
+    if cart is None:
         return list()
 
-    user_cart_ids = await get_products_by_id(" ".join(str(product) for product in query.cart), session)
+    user_cart_ids = await get_products_by_id(" ".join(str(product) for product in cart), session)
     user_cart_ids_set = set(user_cart_ids)
     user_cart = list()
     for product in user_cart_ids_set:
@@ -52,8 +52,8 @@ async def get_user_cart(user_id: int, session: AsyncSession = Depends(get_async_
 
 @router.get("/get_user_favorite", response_model=List[Product] | List[None])
 async def get_user_favorite(user_id: int, session: AsyncSession = Depends(get_async_session)):
-    query = await session.get(User, user_id)
-    if query.favorite is None:
+    favorite = (await session.get(User, user_id)).favorite
+    if favorite is None:
         return []
     user_favorite = await get_products_by_id(" ".join(str(product) for product in query.favorite), session)
     return user_favorite
@@ -94,7 +94,7 @@ async def delete_product_from_cart(user_id: int, product_id: int, count: int,
                                    session: AsyncSession = Depends(get_async_session)):
     prev_cart = await get_user_cart(user_id, session)
     if not prev_cart:
-        raise HTTPException(status_code=404, detail="Cart is empty")
+        raise HTTPException(status_code=404, detail="User not found or cart is empty")
     prev_cart_ids = ids_initialize_with_count(prev_cart)
 
     product_count = prev_cart_ids.count(product_id)
@@ -118,9 +118,8 @@ async def delete_product_from_cart(user_id: int, product_id: int, count: int,
 async def delete_product_from_favorite(user_id: int, product_id: int,
                                        session: AsyncSession = Depends(get_async_session)):
     favorite = await get_user_favorite(user_id, session)
-    print(favorite)
     if not favorite:
-        raise HTTPException(status_code=404, detail="Favorite is empty")
+        raise HTTPException(status_code=404, detail="User not found or favorite is empty")
 
     favorite_ids = ids_initialize(favorite)
 

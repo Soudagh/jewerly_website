@@ -28,8 +28,10 @@ async def get_orders_by_user_id(user_id: int, session: AsyncSession = Depends(ge
 
 @router.get("/get_order_by_id", response_model=Order)
 async def get_order_by_id(order_id: int, session: AsyncSession = Depends(get_async_session)):
-    query = await session.get(Order, order_id)
-    return query
+    order = await session.get(Order, order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return order
 
 
 @router.post("/add_order")
@@ -42,9 +44,8 @@ async def add_order(new_order: OrderCreate, session: AsyncSession = Depends(get_
 
 @router.patch("/update_order", response_model=Order)
 async def update_order(order_id: int, updated_order: OrderUpdate, session: AsyncSession = Depends(get_async_session)):
-    cur_order = await session.get(Order, order_id)
-    if not cur_order:
-        raise HTTPException(status_code=404, detail="Order not found")
+    cur_order = get_order_by_id(order_id, session)
+
     product_data = updated_order.dict(exclude_unset=True)
     for key, value in product_data.items():
         setattr(cur_order, key, value)
