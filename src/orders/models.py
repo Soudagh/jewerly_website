@@ -1,10 +1,22 @@
 from datetime import datetime
 
+from auth.models import User
+from database import Base
+from database import metadata
 from sqlalchemy import Table, Integer, Column, Text, DateTime, ForeignKey
 from sqlalchemy.types import ARRAY
 
-from auth.models import User
-from database import metadata
+
+class Order(Base):
+    __tablename__ = "orders"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    products_id = Column(ARRAY(Integer), nullable=False)
+    status = Column(Text, nullable=False)
+    address = Column(Text, nullable=False)
+    order_date = Column(DateTime, default=datetime.utcnow())
+
 
 order = Table(
     "orders",
