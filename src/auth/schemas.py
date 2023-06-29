@@ -59,10 +59,6 @@ class UserFilter(Filter):
     user_surname: Optional[str]
     registration_date: Optional[datetime]
 
-    is_active: Optional[bool] = True
-    is_superuser: Optional[bool] = False
-    is_verified: Optional[bool] = False
-
     custom_order_by: Optional[List[str]]
     custom_search: Optional[str]
 
